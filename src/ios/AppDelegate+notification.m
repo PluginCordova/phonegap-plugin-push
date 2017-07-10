@@ -79,7 +79,7 @@ static char coldstartKey;
         if (launchOptions) {
             NSLog(@"coldstart");
             self.launchNotification = [launchOptions objectForKey: @"UIApplicationLaunchOptionsRemoteNotificationKey"];
-            [self checkServerurlInUserInfo:self.launchNotification];
+            //[self checkServerurlInUserInfo:self.launchNotification];
             self.coldstart = [NSNumber numberWithBool:YES];
         } else {
             NSLog(@"not coldstart");
@@ -103,7 +103,7 @@ static char coldstartKey;
 
 - (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"clicked on the shade");
-    [self checkServerurlInUserInfo:userInfo];
+    //[self checkServerurlInUserInfo:userInfo];
     PushPlugin *pushHandler = [self getCommandInstance:@"PushNotification"];
     pushHandler.notificationMessage = userInfo;
     pushHandler.isInline = NO;
@@ -112,7 +112,7 @@ static char coldstartKey;
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
     NSLog(@"didReceiveNotification with fetchCompletionHandler");
-    [self checkServerurlInUserInfo:userInfo];
+    //[self checkServerurlInUserInfo:userInfo];
     // app is in the foreground so call notification callback
     if (application.applicationState == UIApplicationStateActive) {
         NSLog(@"app active");
