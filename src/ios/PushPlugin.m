@@ -208,7 +208,12 @@
         } else {
             NSLog(@"PushPlugin.register: setting badge to true");
             clearBadge = YES;
-            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+                
+            });
+            
         }
         NSLog(@"PushPlugin.register: clear badge is set to %d", clearBadge);
 
@@ -277,21 +282,22 @@
 #else
         NSLog(@"PushPlugin.register: action buttons only supported on iOS8 and above");
 #endif
-
-
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-        if ([[UIApplication sharedApplication]respondsToSelector:@selector(registerUserNotificationSettings:)]) {
-            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UserNotificationTypes categories:categories];
-            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-        } else {
+            if ([[UIApplication sharedApplication]respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+                UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UserNotificationTypes categories:categories];
+                [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+                [[UIApplication sharedApplication] registerForRemoteNotifications];
+            } else {
+                [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+                 (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+            }
+#else
             [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
              (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-        }
-#else
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 #endif
+        });
 
         //  GCM options
         [self setGcmSenderId: [iosOptions objectForKey:@"senderID"]];
@@ -315,7 +321,7 @@
             [self setGcmSandbox:@YES];
         }
 
-        if (notificationMessage) {			// if there is a pending startup notification
+        if (notificationMessage) {          // if there is a pending startup notification
             dispatch_async(dispatch_get_main_queue(), ^{
                 // delay to allow JS event handlers to be setup
                 [self performSelector:@selector(notificationReceived) withObject:nil afterDelay: 0.5];
@@ -517,7 +523,11 @@
     NSMutableDictionary* options = [command.arguments objectAtIndex:0];
     int badge = [[options objectForKey:@"badge"] intValue] ?: 0;
 
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badge];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:badge];
+        
+    });
 
     NSString* message = [NSString stringWithFormat:@"app badge count set to %d", badge];
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
@@ -534,7 +544,11 @@
 
 - (void)clearAllNotifications:(CDVInvokedUrlCommand *)command
 {
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+        
+    });
 
     NSString* message = [NSString stringWithFormat:@"cleared all notifications"];
     CDVPluginResult *commandResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
