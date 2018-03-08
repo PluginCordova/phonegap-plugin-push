@@ -142,7 +142,7 @@
     <framework src="libsqlite3.tbd"/>
     <framework src="libz.tbd"/>
     <source-file target-dir="PushNotificationServiceExtension" src="src/ios/PushNotificationServiceExtension/NotificationService.swift" />
-    <config-file target-dir="PushNotificationServiceExtension" src="src/ios/PushNotificationServiceExtension/Info.plist">
+    <config-file target-dir="PushNotificationServiceExtension" src="src/ios/PushNotificationServiceExtension/Info.plist" />
   </platform>
   <platform name="windows">
     <hook type="after_plugin_install" src="hooks/windows/setToastCapable.js"/>
